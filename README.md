@@ -32,4 +32,4 @@ pip install -r requirements.txt
 }
 ```
 
-請用你的 Bot Token 替換掉 "你的 Bot Token" 這串。
+請用你向 BotFather 申請的 Bot Token 替換掉 "你的 Bot Token" 這串。
