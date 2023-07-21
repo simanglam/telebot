@@ -1,4 +1,5 @@
-from core import bot, scheduler
+from core import bot
+from core.notify import scheduler
 
 scheduler.start()
 print("Log in")
