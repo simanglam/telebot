@@ -7,9 +7,9 @@ import time
 
 from core.notify import new_notify, del_notify, show_notify
 from core.inline import draw_entry, draw_month
-from core.callback import handle_callback
+from core.callback import handle_callback, reset
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 with open("token.json", "r") as f:
     token = json.load(f)['token']
@@ -28,6 +28,7 @@ I am here to echo your kind words back to you. Just say anything nice and I'll s
 ## TODO: 把這個改成純粹接收參數並創建任務
 @bot.message_handler(commands=['remind'])
 def remind(message):
+    reset(message.from_user.id)
     bot.reply_to(message, "歡迎使用機器人", reply_markup = draw_entry() )
 
 @bot.message_handler(commands=['delete'])

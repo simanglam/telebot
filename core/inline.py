@@ -24,8 +24,10 @@ def draw_month():
     markup = {}
     i = 1
     while i <= 12:
-        markup.update({str(i): {"callback_data": f"month {i}"}})
+        markup.update({str(i): {"callback_data": f"month {i - 1}"}})
         i += 1
+    markup.update({'下一步': {"callback_data": 'next'}})
+    markup.update({"回到首頁": {"callback_data": "jump_entry"}})
     markup = quick_markup(markup, row_width=6)
     return markup
 
