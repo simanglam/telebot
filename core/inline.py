@@ -14,7 +14,7 @@ def draw_day(month: int):
     i = 1
     while i <= month_day[month - 1] or i % 7 != 0:
         if i <= month[month]:
-            markup.update({str(i): {"callback_data": f"day {i}"}})
+            markup.update({str(i): {"callback_data": f"day_{i}"}})
         i += 1
 
     markup = quick_markup(markup, row_width=7)
@@ -24,7 +24,7 @@ def draw_month():
     markup = {}
     i = 1
     while i <= 12:
-        markup.update({str(i): {"callback_data": f"month {i - 1}"}})
+        markup.update({str(i): {"callback_data": f"month_{i}"}})
         i += 1
     markup.update({'下一步': {"callback_data": 'next'}})
     markup.update({"回到首頁": {"callback_data": "jump_entry"}})

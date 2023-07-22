@@ -30,7 +30,7 @@ user_time_arg_temp = {}
 def reset(chat_id):
     try:
         del user_state_dict[chat_id]
-        user_state_dict.update({chat_id: {'states': 'entry', 'description': "OK"}})
+        user_state_dict.update({chat_id: 'entry'})
     except:
         pass
 
@@ -38,20 +38,30 @@ def handle_callback(data: str, chat_id: int) -> dict:
     try:
         def check_user_state(data, chat_id: int) -> dict:
             if user_state_dict.get(chat_id) is None:
-                user_state_dict.update({chat_id: {'states': 'entry', 'description': "OK"}})
-            if callback_data_state_dict.get(data) != user_state_dict[chat_id]['states'] and callback_data_state_dict.get(data) != None :
+                user_state_dict.update({chat_id:'entry'})
+            if callback_data_state_dict.get(data) != user_state_dict[chat_id] and callback_data_state_dict.get(data) != None :
                 return {'states': 'error', 'description': '請按順序執行'}
-            return {'states': user_state_dict[chat_id]['states'], 'description': "OK"}
+            return {'states': user_state_dict[chat_id], 'description': "OK"}
 
         user_state = check_user_state(data, chat_id)
         if user_state['states'] == 'error':
             return {"text": f"{user_state['states']}. Error massage: {user_state['description']}"}
+        
+        if data == "jump_entry":
+            print('jump back')
+            print(user_state_dict)
+            user_state_dict.pop(chat_id)
+            print(user_state_dict)
+            try:
+                del user_time_arg_temp[chat_id]
+            finally:
+                return {'text': 'main page', 'reply_markup': draw_entry()}
 
         if user_state['states'] == 'entry':
 
             if data.startswith("creat"):
-                user_state_dict[chat_id].update({'states': 'ask pattern'})
-                user_time_arg_temp.update({chat_id: []})
+                user_state_dict.update({chat_id: 'ask pattern'})
+                user_time_arg_temp.update({chat_id: {}})
                 return {"text": "請問你的提醒頻率是", 'reply_markup': draw_ask_pattern()}
 
             if data.startswith("search"):
@@ -69,28 +79,27 @@ def handle_callback(data: str, chat_id: int) -> dict:
                     return{"text":f"{user_state['states']}"}
                 
         if user_state['states'] == 'ask pattern':
-            if data.startswith('month'):
-                user_state_dict[chat_id].update({'states': 'monthly'})
-                user_time_arg_temp[chat_id].append('month = ')
-                return {'text': f'請選擇月份\n已選擇月份:', 'reply_markup': draw_month()}
+            if data == ('monthly'):
+                if user_time_arg_temp.get(chat_id) is None:
+                    user_time_arg_temp.update({chat_id: {}})
+                if user_time_arg_temp[chat_id].get('monthly') is None:
+                    user_time_arg_temp[chat_id].update({'monthly': []})
+                user_state_dict.update({chat_id: 'monthly'})
+                return {'text': f'請選擇月份\n已選擇月份:\{"".join(user_time_arg_temp[chat_id]["monthly"])}', 'reply_markup': draw_month()}
             
         if user_state['states'] == 'monthly':
+            print(data)
             if data == "next":
-                user_state_dict[chat_id].update({'states': 'ask notify'})
-                return 
-            user_time_arg_temp[chat_id].append("".join(data.split()[1:]))
-            print(user_time_arg_temp)
-            return {'text': f'請選擇月份\n已選擇月份: {" ".join(user_time_arg_temp[chat_id][1:])}', 'reply_markup': draw_month()}
+                user_state_dict.update({chat_id: 'ask notify'})
+                return {"text": "So far So good"}
+            print(user_time_arg_temp[chat_id]["monthly"])
+            if data.strip()[6:] in user_time_arg_temp[chat_id]["monthly"] and len(user_time_arg_temp[chat_id]["monthly"]) != 0:
+                return {'text': f'你重複輸入了\n請選擇月份\n已選擇月份: {"".join(user_time_arg_temp[chat_id]["monthly"])}', 'reply_markup': draw_month()}
+            user_time_arg_temp[chat_id]['monthly'].append(''.join(data.strip()[6:]))
+            return {'text': f'請選擇月份\n已選擇月份: {" ".join(user_time_arg_temp[chat_id]["monthly"])}', 'reply_markup': draw_month()}
 
-        if data == "jump_entry":
             
-            user_state_dict.update({chat_id: {'states': 'entry'}})
-            try:
-                del user_time_arg_temp[chat_id]
-            except:
-                pass
-            print(handle_callback(data, chat_id))
-            return handle_callback(data, chat_id)
         
     except:
-        return {"text": "ERROR, Please Check Log"}
+        print("BUG!!!")
+        return {"text": "ERROR, Please Check Log", 'reply_markup': draw_month()} 

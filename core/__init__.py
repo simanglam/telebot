@@ -61,7 +61,10 @@ def echo_message(message):
 def call_back_dispach(call):
     result = handle_callback(call.data, call.message.chat.id)
     print(result)
-    if result.get('reply_markup') is None:
-        bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id)  
-    else:
+    try :
+        result['reply_markup']
         bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id, reply_markup=result.get('reply_markup'))
+    except KeyError:
+        bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id)
+    except:
+        bot.edit_message_text("看起來你因為重複輸入過多次所以跳出來了", call.message.chat.id, call.message.message_id)
