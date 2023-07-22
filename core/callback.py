@@ -23,12 +23,14 @@ state_dict = {
 }
 
 callback_data_state_dict = {
-    'entry': ['creat_remind'],
+    'entry': ['creat_remind', "search_remind", "delete_remind"],
     'noon': ['before', 'after'],
     'hour': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
-    'min': ['0', '15', '30', '55'],
+    'min': ['0', '15', '30', '45'],
+    'ask name': ['name_finish'],
     'confirm': ['before', 'after'],
     'recheck': ['before', 'after'],
+    "finish": ['finish']
 }
 
 user_time_arg_temp = {}
@@ -45,6 +47,19 @@ def is_wait_notify(chat_id):
     if chat_id in wait_notify:
         return True
     return False
+
+def update_name(chat_id, text):
+    user_state_dict.update({chat_id: 'finish'})
+    print(user_state_dict)
+    print(user_time_arg_temp)
+    user_time_arg_temp[chat_id][-1].update({"text": text})
+    while len(user_time_arg_temp[chat_id]):
+        print("OK")
+        time_arg = f"hour = {user_time_arg_temp[chat_id][-1]['hour']}, minute = {user_time_arg_temp[chat_id][-1]['min']}"
+        exec(f'new_notify(chat_id = {chat_id}, text = "{user_time_arg_temp[chat_id][-1]["text"]}", time = "cron", time_arg="{time_arg}")')
+        user_time_arg_temp[chat_id].pop(-1)
+        print(len(user_time_arg_temp[chat_id]))
+    return send_message(chat_id, f"設定 {user_time_arg_temp[chat_id][-1]['hour']}:{user_time_arg_temp[chat_id][-1]['min']}")
     
 
 def reset(chat_id):
@@ -55,16 +70,22 @@ def reset(chat_id):
         pass
 
 def check_user_state(data, chat_id: int) -> dict:
-            print(user_time_arg_temp)
-            if user_state_dict.get(chat_id) is None:
-                user_state_dict.update({chat_id:'entry'})
-            if callback_data_state_dict.get(data) != user_state_dict[chat_id] and callback_data_state_dict.get(data) != None :
-                return {'states': 'error', 'description': '請按順序執行'}
-            return {'states': user_state_dict[chat_id], 'description': "OK"}
+    print("A")
+    print(user_state_dict)
+    if user_state_dict.get(chat_id) is None:
+        user_state_dict.update({chat_id:'entry'})
+        print(user_state_dict)
+    print(user_state_dict.get(chat_id))
+    if  data not in callback_data_state_dict.get(user_state_dict.get(chat_id)):
+        print(user_state_dict)
+        return {'states': 'error', 'description': '請按順序執行'}
+    print(user_state_dict)
+    return {'states': user_state_dict[chat_id], 'description': "OK"}
 
 def handle_callback(data: str, chat_id: int) -> dict:
     try:
         user_state = check_user_state(data, chat_id)
+        print(user_state)
         if user_state['states'] == 'error':
             raise BaseException(f"你沒有按照順序")
         
@@ -123,20 +144,28 @@ def handle_callback(data: str, chat_id: int) -> dict:
             return {"text": f"目前選擇：{user_time_arg_temp[chat_id][-1]['hour']}:{user_time_arg_temp[chat_id][-1]['min']}"}
         
         elif user_state['states'] == 'ask name':
-            print(user_time_arg_temp[chat_id])
-            # user_state_dict.update({chat_id: 'ask name'})
+            return{"就這樣了"}
+
+        elif user_state['states'] == 'finish':
+            while len(user_time_arg_temp[chat_id]) != 0:
+                time_arg = f"hour = {user_time_arg_temp[chat_id][-1]['hour']}, minute = {user_time_arg_temp[chat_id][-1]['min']}"
+                exec(f'new_notify({chat_id}, {user_time_arg_temp[chat_id][-1]["text"]}, cron, time_arg="{time_arg}")')
+                user_time_arg_temp[chat_id].remove(-1)
         
+        elif data == "name_finish":
+            user_state_dict.update({chat_id: 'finish'})
+            return handle_callback(data='finish', chat_id=chat_id)
+
         else:
             raise BaseException(f"沒有找到與 {data} 相符的處理方式")
 
-            
     except BaseException as e:
         print("BUG!!!")
-        print("Here is something you might use")
+        print("Here is something you might use:")
         print(e)
         return {"text": "ERROR, Please Check Log", 'reply_markup': draw_hour(data)} 
     except:
         print("BUG!!!")
         print("Here is something you might use")
-        print(data)
+        print(data, user_time_arg_temp, user_state_dict, user_state)
         return {"text": "ERROR, Please Check Log", 'reply_markup': draw_hour(data)} 

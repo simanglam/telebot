@@ -23,12 +23,13 @@ def draw_hour(data):
         start = 0
     else:
         start = 12
-        repeat = 0
-        markup = {}
-        while repeat < 12:
-            markup.update({str(start + repeat): {"callback_data": str(start + repeat)}})
-            repeat += 1
-        markup = quick_markup(markup, row_width=6)
+    repeat = 0
+    markup = {}
+
+    while repeat < 12:
+        markup.update({str(start + repeat): {"callback_data": str(start + repeat)}})
+        repeat += 1
+    markup = quick_markup(markup, row_width=6)
     return markup
 
 def draw_min():

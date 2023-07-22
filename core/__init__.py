@@ -7,7 +7,7 @@ import time
 from telebot.async_telebot import AsyncTeleBot
 from core.notify import new_notify, del_notify, show_notify
 from core.inline import draw_entry, draw_month
-from core.callback import handle_callback, reset, check_user_state
+from core.callback import handle_callback, reset, check_user_state, update_name
 
 logging.basicConfig(level=logging.INFO)
 
@@ -55,7 +55,10 @@ async def show(message):
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
 @bot.message_handler(func=lambda message: True)
 async def echo_message(message):
-    await bot.reply_to(message, message.text)
+    print("A")
+    print(check_user_state(chat_id=message.from_user.id, data="name_finish"))
+    if check_user_state(chat_id=message.from_user.id, data="name_finish")['states'] == 'ask name':
+        update_name(message.from_user.id,message.text)
 
 @bot.message_handler(func=lambda message: True)
 async def echo_message(message):
