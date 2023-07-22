@@ -7,7 +7,7 @@ import time
 
 from core.notify import new_notify, del_notify, show_notify
 from core.inline import draw_entry, draw_month
-from core.callback import handle_callback, reset
+from core.callback import handle_callback, reset, check_user_state
 
 logging.basicConfig(level=logging.INFO)
 

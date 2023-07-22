@@ -11,7 +11,6 @@ scheduler = BackgroundScheduler()
 
 
 user_notify_dict = {}
-dummy = []
 
 '''
 demo user_notify_dict
@@ -20,8 +19,8 @@ user_notify_dict = {chat_id:[] }
 
 base_url = f"https://api.telegram.org/bot{token}/"
 
-async def send_message(chat_id, text):
-    r = await requests.post(f'{base_url}sendMessage', {"chat_id": chat_id, "text": text})
+def send_message(chat_id, text):
+    r = requests.post(f'{base_url}sendMessage', {"chat_id": chat_id, "text": text})
     logging.info(f"Status Code: {r}, INFO : {r.text}")
 
 
