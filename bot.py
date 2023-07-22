@@ -1,6 +1,7 @@
 from core import bot
 from core.notify import scheduler
+import asyncio
 
 scheduler.start()
 print("Log in")
-bot.infinity_polling()
+asyncio.run(bot.infinity_polling())

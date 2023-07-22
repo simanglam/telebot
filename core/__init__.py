@@ -1,10 +1,10 @@
 import re
 import logging
-import telebot
 import threading
 import json
 import time
 
+from telebot.async_telebot import AsyncTeleBot
 from core.notify import new_notify, del_notify, show_notify
 from core.inline import draw_entry, draw_month
 from core.callback import handle_callback, reset, check_user_state
@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 with open("token.json", "r") as f:
     token = json.load(f)['token']
-bot = telebot.TeleBot(token)
+bot = AsyncTeleBot(token)
 
 
 # Handle '/start' and '/help'
@@ -27,9 +27,9 @@ I am here to echo your kind words back to you. Just say anything nice and I'll s
 
 ## TODO: 把這個改成純粹接收參數並創建任務
 @bot.message_handler(commands=['remind'])
-def remind(message):
+async def remind(message):
     reset(message.from_user.id)
-    bot.reply_to(message, "歡迎使用機器人", reply_markup = draw_entry() )
+    await bot.reply_to(message, "歡迎使用機器人", reply_markup = draw_entry() )
 
 @bot.message_handler(commands=['delete'])
 def delete(message):
@@ -49,22 +49,26 @@ def show(message):
 
 
 @bot.message_handler(commands=['test'])
-def show(message):
+async def show(message):
     bot.reply_to(message, "我")
 
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
 @bot.message_handler(func=lambda message: True)
-def echo_message(message):
-    bot.reply_to(message, message.text)
+async def echo_message(message):
+    await bot.reply_to(message, message.text)
+
+@bot.message_handler(func=lambda message: True)
+async def echo_message(message):
+    await bot.reply_to(message, message.text)
 
 @bot.callback_query_handler(func=lambda cb: True)
-def call_back_dispach(call):
+async def call_back_dispach(call):
     result = handle_callback(call.data, call.message.chat.id)
     print(result)
     try :
         result['reply_markup']
-        bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id, reply_markup=result.get('reply_markup'))
+        await bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id, reply_markup=result.get('reply_markup'))
     except KeyError:
-        bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id)
+        await bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id)
     except:
-        bot.edit_message_text("看起來你因為重複輸入過多次所以跳出來了", call.message.chat.id, call.message.message_id)
+        await bot.edit_message_text("看起來你因為重複輸入過多次所以跳出來了", call.message.chat.id, call.message.message_id)

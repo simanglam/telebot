@@ -23,17 +23,29 @@ state_dict = {
 }
 
 callback_data_state_dict = {
-    'creat_remind': 'entry',
-    'year': 'yearly',
-    'month': 'monthly',
-    'week': 'weekly',
-    'day': 'daily',
+    'entry': ['creat_remind'],
+    'noon': ['before', 'after'],
+    'hour': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+    'min': ['0', '15', '30', '55'],
+    'confirm': ['before', 'after'],
+    'recheck': ['before', 'after'],
 }
 
 user_time_arg_temp = {}
 """
 user_time_arg_temp = {chat_id: [{hour: str, min: str, text: str, drug: optional}, {}]}
 """
+
+def is_wait_name(chat_id):
+    if chat_id in wait_name:
+        return True
+    return False
+
+def is_wait_notify(chat_id):
+    if chat_id in wait_notify:
+        return True
+    return False
+    
 
 def reset(chat_id):
     try:
@@ -112,7 +124,7 @@ def handle_callback(data: str, chat_id: int) -> dict:
         
         elif user_state['states'] == 'ask name':
             print(user_time_arg_temp[chat_id])
-            user_state_dict.update({chat_id: 'hour'})
+            # user_state_dict.update({chat_id: 'ask name'})
         
         else:
             raise BaseException(f"沒有找到與 {data} 相符的處理方式")
