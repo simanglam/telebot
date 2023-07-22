@@ -1,11 +1,15 @@
+import re
 import logging
 import telebot
 import threading
 import json
 import time
-from core.notify import new_notify, del_notify, show_notify
 
-logging.basicConfig(level=logging.INFO)
+from core.notify import new_notify, del_notify, show_notify
+from core.inline import draw_entry, draw_month
+from core.callback import handle_callback
+
+logging.basicConfig(level=logging.DEBUG)
 
 with open("token.json", "r") as f:
     token = json.load(f)['token']
@@ -24,9 +28,7 @@ I am here to echo your kind words back to you. Just say anything nice and I'll s
 ## TODO: 把這個改成純粹接收參數並創建任務
 @bot.message_handler(commands=['remind'])
 def remind(message):
-    m1 = message.text.split()[1]
-    m2 = message.text.split()[2]
-    new_notify(message.from_user.id, m1, 'interval', m2)
+    bot.reply_to(message, "歡迎使用機器人", reply_markup = draw_entry() )
 
 @bot.message_handler(commands=['delete'])
 def delete(message):
@@ -44,8 +46,21 @@ def delete(message):
 def show(message):
     bot.reply_to(message, "\n".join(show_notify(message.from_user.id)))
 
+
+@bot.message_handler(commands=['test'])
+def show(message):
+    bot.reply_to(message, "我")
+
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
 @bot.message_handler(func=lambda message: True)
 def echo_message(message):
     bot.reply_to(message, message.text)
 
+@bot.callback_query_handler(func=lambda cb: True)
+def call_back_dispach(call):
+    result = handle_callback(call.data, call.message.chat.id)
+    print(result)
+    if result.get('reply_markup') is None:
+        bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id)  
+    else:
+        bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id, reply_markup=result.get('reply_markup'))

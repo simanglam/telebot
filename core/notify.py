@@ -13,10 +13,15 @@ scheduler = BackgroundScheduler()
 user_notify_dict = {}
 dummy = []
 
+'''
+demo user_notify_dict
+user_notify_dict = {chat_id:[] }
+'''
+
 base_url = f"https://api.telegram.org/bot{token}/"
 
-def remind(chat_id, text):
-    r = requests.post(f'{base_url}sendMessage', {"chat_id": chat_id, "text": text})
+async def send_message(chat_id, text):
+    r = await requests.post(f'{base_url}sendMessage', {"chat_id": chat_id, "text": text})
     logging.info(f"Status Code: {r}, INFO : {r.text}")
 
 
@@ -35,8 +40,10 @@ def del_notify(chat_id, text):
     scheduler.remove_job(f"{chat_id}--{text}")
     user_notify_dict[chat_id].remove(text)
 
-def show_notify(chat_id):
+def show_notify(chat_id) -> dict:
     if user_notify_dict.get(chat_id) is None or len(user_notify_dict[chat_id]) == 0:
-        return ["No You Have none"]
-    
-    return user_notify_dict[chat_id]
+        return {'text':"No You Have none", 'reply_markup': {"回到首頁": {"callback_data": "jump_entry"}}}
+    result = {'text': '以下是你現有的提醒', 'reply_markup':{}}
+    for i in user_notify_dict[chat_id]:
+        result['reply_markup'].update({f"{i}": {}})
+    return result
