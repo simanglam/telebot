@@ -5,6 +5,7 @@ import json
 import time
 
 from telebot.async_telebot import AsyncTeleBot
+from telebot.types import InlineKeyboardMarkup
 from core.notify import new_notify, del_notify, show_notify
 from core.inline import draw_entry, draw_month
 from core.callback import handle_callback, reset, check_user_state, update_name
@@ -52,8 +53,9 @@ def show(message):
 @bot.message_handler(func=lambda message: True)
 async def echo_message(message):
     if check_user_state(chat_id=message.from_user.id, data="name_finish")['states'] == 'ask name':
-        result = update_name(message.from_user.id,message.text, msg = message)
+        result = update_name(message.from_user.id,message.text)
         print(result)
+        print("OK")
         await bot.reply_to(message, result['text'], reply_markup = result['reply_markup'])
 
 @bot.message_handler(func=lambda message: True)
@@ -65,8 +67,9 @@ async def call_back_dispach(call):
     result = handle_callback(call.data, call.message.chat.id)
     print(result)
     try :
+        print("OK")
         result['reply_markup']
-        await bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id, reply_markup=result.get('reply_markup'))
+        await bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id, reply_markup=result['reply_markup'])
     except KeyError:
         await bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id)
     except:

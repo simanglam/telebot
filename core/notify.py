@@ -24,12 +24,12 @@ def send_message(chat_id, text):
     logging.info(f"Status Code: {r}, INFO : {r.text}")
 
 
-def new_notify(chat_id, text, time, time_arg=""):
+def new_notify(chat_id, text, time, id, time_arg=""):
     if user_notify_dict.get(chat_id) is None:
         user_notify_dict.update({chat_id: []})
     user_notify_dict[chat_id].append(text)
     exec(f"""scheduler.add_job(
-send_message,  '{time}', {time_arg}, args=[chat_id, text], id="{chat_id}--{text}--{time_arg}"
+send_message,  '{time}', {time_arg}, args=[chat_id, text], id="{id}"
 )
 """)
 
