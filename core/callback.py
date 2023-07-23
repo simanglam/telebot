@@ -28,7 +28,7 @@ callback_data_state_dict = {
     'hour': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
     'min': ['0', '15', '30', '45'],
     'ask name': ['name_finish'],
-    "confirm": ['yes no'],
+    "confirm": ['yes', 'no', 'confirm'],
     "finish": ['finish']
 }
 
@@ -146,7 +146,8 @@ def handle_callback(data: str, chat_id: int) -> dict:
             if data == 'yes':
                 user_state_dict.update({chat_id: 'finish'})
             elif data == 'no':
-                
+                user_state_dict.update({chat_id: 'finish'})
+                return handle_callback("", chat_id)
             else:
                 raise BaseException("Unknow")
             return{"就這樣了"}
@@ -165,8 +166,8 @@ def handle_callback(data: str, chat_id: int) -> dict:
                 user_time_arg_temp[chat_id].remove(-1)
         
         elif data == "name_finish":
-            user_state_dict.update({chat_id: 'finish'})
-            return handle_callback(data='finish', chat_id=chat_id)
+            user_state_dict.update({chat_id: 'confirm'})
+            return handle_callback(data='confirm', chat_id=chat_id)
 
         else:
             raise BaseException(f"沒有找到與 {data} 相符的處理方式")
