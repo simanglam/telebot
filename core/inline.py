@@ -61,3 +61,9 @@ def draw_ask_pattern():
         "每日": {"callback_data": "daily"},
         "回到首頁": {"callback_data": "jump_entry"}
         }, row_width=2)
+
+def draw_confirm():
+    return quick_markup({
+        "是": {"callback_data": "yes"},
+        "否": {"callback_data": "no"}
+        }, row_width=2)

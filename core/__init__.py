@@ -48,17 +48,11 @@ def show(message):
     bot.reply_to(message, "\n".join(show_notify(message.from_user.id)))
 
 
-@bot.message_handler(commands=['test'])
-async def show(message):
-    bot.reply_to(message, "我")
-
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
 @bot.message_handler(func=lambda message: True)
 async def echo_message(message):
-    print("A")
-    print(check_user_state(chat_id=message.from_user.id, data="name_finish"))
     if check_user_state(chat_id=message.from_user.id, data="name_finish")['states'] == 'ask name':
-        update_name(message.from_user.id,message.text)
+        update_name(message.from_user.id,message.text, msg = message)
 
 @bot.message_handler(func=lambda message: True)
 async def echo_message(message):
