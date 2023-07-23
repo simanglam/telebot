@@ -28,8 +28,7 @@ callback_data_state_dict = {
     'hour': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
     'min': ['0', '15', '30', '45'],
     'ask name': ['name_finish'],
-    'confirm': ['before', 'after'],
-    'recheck': ['before', 'after'],
+    "confirm": ['yes no'],
     "finish": ['finish']
 }
 
@@ -143,6 +142,19 @@ def handle_callback(data: str, chat_id: int) -> dict:
             send_message(chat_id, "請給我藥名")
             return {"text": f"目前選擇：{user_time_arg_temp[chat_id][-1]['hour']}:{user_time_arg_temp[chat_id][-1]['min']}"}
         
+        elif user_state['states'] == 'confirm':
+            if data == 'yes':
+                user_state_dict.update({chat_id: 'finish'})
+            elif data == 'no':
+                
+            else:
+                raise BaseException("Unknow")
+            return{"就這樣了"}
+
+        elif user_state['states'] == 'recheck':
+            user_state_dict.update({chat_id: 'finish'})
+            return{"就這樣了"}
+
         elif user_state['states'] == 'ask name':
             return{"就這樣了"}
 
