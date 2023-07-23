@@ -52,7 +52,9 @@ def show(message):
 @bot.message_handler(func=lambda message: True)
 async def echo_message(message):
     if check_user_state(chat_id=message.from_user.id, data="name_finish")['states'] == 'ask name':
-        update_name(message.from_user.id,message.text, msg = message)
+        result = update_name(message.from_user.id,message.text, msg = message)
+        print(result)
+        await bot.reply_to(message, result['text'], reply_markup = result['reply_markup'])
 
 @bot.message_handler(func=lambda message: True)
 async def echo_message(message):

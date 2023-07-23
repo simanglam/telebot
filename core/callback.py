@@ -61,7 +61,7 @@ def update_name(chat_id, text, msg):
     print(user_state_dict)
     print(user_time_arg_temp)
     user_time_arg_temp[chat_id].update({"text": text})
-    return handle_callback("confirm", chat_id, msg = msg)
+    return handle_callback("confirm", chat_id)
 
 def reset(chat_id):
     try:
@@ -70,7 +70,7 @@ def reset(chat_id):
     except:
         pass
 
-def check_user_state(data, chat_id: int, msg = " ") -> dict:
+def check_user_state(data, chat_id: int) -> dict:
     print(user_state_dict)
     if user_state_dict.get(chat_id) is None:
         user_state_dict.update({chat_id:'entry'})
@@ -143,8 +143,8 @@ def handle_callback(data: str, chat_id: int, msg = '') -> dict:
         
         elif user_state['states'] == 'confirm':
             if data == 'yes':
-                print("OK")
                 user_state_dict.update({chat_id: 'finish'})
+                return handle_callback("finish", chat_id)
             elif data == 'no':
                 print("no")
                 user_state_dict.update({chat_id: 'noon'})
@@ -152,7 +152,7 @@ def handle_callback(data: str, chat_id: int, msg = '') -> dict:
             elif data == 'confirm':
                 text = f"請確認 {user_time_arg_temp[chat_id]['hour']}:{user_time_arg_temp[chat_id]['min']} 提醒 {user_time_arg_temp[chat_id]['text']}"
                 print(text)
-                return {'state': "send", "msg": msg, "text" : text}
+                return {"text" : text, "reply_markup": draw_confirm()}
 
             else:
                 raise BaseException("Unknow")
@@ -164,14 +164,13 @@ def handle_callback(data: str, chat_id: int, msg = '') -> dict:
             return{"就這樣了"}
 
         elif user_state['states'] == 'finish':
-            print("A")
             user_state_dict.update({chat_id: 'entry'})
             time_arg = f"hour = {user_time_arg_temp[chat_id]['hour']}, minute = {user_time_arg_temp[chat_id]['min']}"
             exec(f'new_notify(chat_id = {chat_id}, text = "{user_time_arg_temp[chat_id]["text"]}", time = "cron", time_arg="{time_arg}")')
-            print(user_time_arg_temp)
             time = f"{user_time_arg_temp[chat_id]['hour']}:{user_time_arg_temp[chat_id]['min']}"
-            return {'text' f"設定 {time}"}
             del user_time_arg_temp[chat_id]
+            print(user_time_arg_temp)
+            return {'text': f"設定 {time}"}
         
         elif data == "name_finish":
             user_state_dict.update({chat_id: 'confirm'})
@@ -185,9 +184,9 @@ def handle_callback(data: str, chat_id: int, msg = '') -> dict:
         print("Here is something you might use")
         print(e)
         print(f"data: {data}, user_time_arg_temp: {user_time_arg_temp}, user_state_dict: {user_state_dict}, user_state: {user_state}")
-        return {"text": "ERROR, Please Check Log", 'reply_markup': draw_hour(data)} 
+        return {"text": "ERROR, Please Check Log"} 
     except:
         print("BUG!!!")
         print("Here is something you might use")
         print(f"data: {data}, user_time_arg_temp: {user_time_arg_temp}, user_state_dict: {user_state_dict}, user_state: {user_state}")
-        return {"text": "ERROR, Please Check Log", 'reply_markup': draw_hour(data)} 
+        return {"text": "ERROR, Please Check Log"} 
