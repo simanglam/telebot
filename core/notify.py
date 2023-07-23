@@ -29,7 +29,7 @@ def new_notify(chat_id, text, time, time_arg=""):
         user_notify_dict.update({chat_id: []})
     user_notify_dict[chat_id].append(text)
     exec(f"""scheduler.add_job(
-send_message,  '{time}', {time_arg}, args=[chat_id, text], id="{chat_id}--{text}"
+send_message,  '{time}', {time_arg}, args=[chat_id, text], id="{chat_id}--{text}--{time_arg}"
 )
 """)
 
