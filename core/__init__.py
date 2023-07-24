@@ -13,7 +13,7 @@ from core.callback import handle_callback, reset, check_user_state, update_name
 logging.basicConfig(level=logging.INFO)
 
 with open("token.json", "r") as f:
-    token = json.load(f)['token']
+    token = json.load(f)['token2']
 bot = AsyncTeleBot(token)
 
 
@@ -37,17 +37,6 @@ def delete(message):
     m1 = message.text.split()[1]
     del_notify(message.from_user.id, m1)
 
-@bot.message_handler(commands=['delete'])
-def delete(message):
-    m1 = message.text.split()[1]
-    del_notify(message.from_user.id, m1)
-
-## TODO: 加上查詢任務的方法
-
-@bot.message_handler(commands=['show'])
-def show(message):
-    bot.reply_to(message, "\n".join(show_notify(message.from_user.id)))
-
 
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
 @bot.message_handler(func=lambda message: True)
@@ -68,9 +57,10 @@ async def call_back_dispach(call):
     print(result)
     try :
         print("OK")
-        result['reply_markup']
         await bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id, reply_markup=result['reply_markup'])
+        print("OK")
+        result['reply_markup']
     except KeyError:
         await bot.edit_message_text(result['text'], call.message.chat.id, call.message.message_id)
-    except:
-        await bot.edit_message_text("看起來你因為重複輸入過多次所以跳出來了", call.message.chat.id, call.message.message_id)
+    except BaseException as e:
+        await bot.edit_message_text(f"看起來你因為重複輸入過多次所以跳出來了 Error message: {e}", call.message.chat.id, call.message.message_id)

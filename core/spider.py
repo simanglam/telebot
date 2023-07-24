@@ -125,3 +125,5 @@ def search_side_effect(name):
         return(x)
 
     #print(f"副作用  {out_put}")
+
+search_side_effect("衛署藥輸字第026469號")

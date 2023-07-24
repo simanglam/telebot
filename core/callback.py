@@ -23,8 +23,8 @@ state_dict = {
 }
 
 callback_data_state_dict = {
-    'entry': ['creat_remind', "search_remind", "delete_remind"],
-    'noon': ['before', 'after'],
+    'entry': ['creat_remind', "search_remind", "delete_remind", "jump_entry"],
+    'noon': ['before', 'after', "jump_entry"],
     'hour': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
     'min': ['0', '15', '30', '45'],
     'ask name': ['name_finish'],
@@ -195,12 +195,15 @@ def handle_callback(data: str, chat_id: int, msg = '') -> dict:
             print(id)
 
             if user_time_arg_temp[chat_id]['drug']['state']:
-                text = {user_time_arg_temp[chat_id]['text'] + user_time_arg_temp[chat_id]["drug"]["text"]}.strip("\"")
+
+                print("GOOD")
+                text = user_time_arg_temp[chat_id]['text'] + user_time_arg_temp[chat_id]["drug"]["text"] + "\n"
+                print(text)
                 print(f'''new_notify(chat_id = {chat_id}, 
                 text = "{text}",
                 time = "cron", id = "{id}", time_arg = "{time_arg}" )''')
                 exec(f'''new_notify(chat_id = {chat_id}, 
-                text = "{user_time_arg_temp[chat_id]['text'] + user_time_arg_temp[chat_id]["drug"]["text"]}",
+                text = """{user_time_arg_temp[chat_id]['text'] + user_time_arg_temp[chat_id]["drug"]["text"]}""",
                 time = "cron", id = "{id}", time_arg = "{time_arg}" )''')
 
             else:
