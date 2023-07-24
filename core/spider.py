@@ -100,21 +100,21 @@ def search_side_effect(name):
     soup = bs4.BeautifulSoup(result, "html.parser")
 
     print("如有以下副作用，請立即停止使用 :")
-    x = '有問題'
+    x = '如有以下副作用，請立即停止使用 :\n'
     try:
-        x = ti1(soup)
+        x += ti1(soup)
         #print("由層1輸出")
     except:
         try:
-            x = ti2(soup)
+            x += ti2(soup)
             #print("由層2輸出")
         except:
             try:
-                x = ti3(soup)
+                x += ti3(soup)
                 #print("由層3輸出")
             except:
                 try:
-                    x = ti4(soup)
+                    x += ti4(soup)
                     #print("由層4輸出")
                 except:
                     pass

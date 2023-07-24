@@ -152,6 +152,7 @@ def handle_callback(data: str, chat_id: int, msg = '') -> dict:
                 result = search_side_effect(data)
                 print(user_time_arg_temp[chat_id]['drug'])
                 user_time_arg_temp[chat_id]['drug'].update({'state': True})
+                user_time_arg_temp[chat_id]['drug'].update({'text': result})
                 return {'text': f'請確認 {result}', "reply_markup": draw_confirm()}
 
         
@@ -186,12 +187,21 @@ def handle_callback(data: str, chat_id: int, msg = '') -> dict:
             return{"就這樣了"}
 
         elif user_state['states'] == 'finish':
+            print("GOOD")
             user_state_dict.update({chat_id: 'entry'})
             time_arg = f"hour = {user_time_arg_temp[chat_id]['hour']}, minute = {user_time_arg_temp[chat_id]['min']}"
             id = f"{user_time_arg_temp[chat_id]['hour']}--{user_time_arg_temp[chat_id]['min']}--{user_time_arg_temp[chat_id]['text']}"
+            print(time_arg)
+            print(id)
 
             if user_time_arg_temp[chat_id]['drug']['state']:
-                exec(f'new_notify(chat_id = {chat_id}, text = "{user_time_arg_temp[chat_id]["text"]}:\n{user_time_arg_temp[chat_id]["drug"]["text"]}", time = "cron", id = "{id}", time_arg="{time_arg}")')
+                text = {user_time_arg_temp[chat_id]['text'] + user_time_arg_temp[chat_id]["drug"]["text"]}.strip("\"")
+                print(f'''new_notify(chat_id = {chat_id}, 
+                text = "{text}",
+                time = "cron", id = "{id}", time_arg = "{time_arg}" )''')
+                exec(f'''new_notify(chat_id = {chat_id}, 
+                text = "{user_time_arg_temp[chat_id]['text'] + user_time_arg_temp[chat_id]["drug"]["text"]}",
+                time = "cron", id = "{id}", time_arg = "{time_arg}" )''')
 
             else:
                 exec(f'new_notify(chat_id = {chat_id}, text = "{user_time_arg_temp[chat_id]["text"]}",  time = "cron", id = "{id}", time_arg="{time_arg}")')
