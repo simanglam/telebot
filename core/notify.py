@@ -6,7 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 
 with open("token.json", "r") as f:
-    token = json.load(f)['token2']
+    token = json.load(f)['token']
 scheduler = BackgroundScheduler()
 
 

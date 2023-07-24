@@ -13,7 +13,7 @@ from core.callback import handle_callback, reset, check_user_state, update_name
 logging.basicConfig(level=logging.INFO)
 
 with open("token.json", "r") as f:
-    token = json.load(f)['token2']
+    token = json.load(f)['token']
 bot = AsyncTeleBot(token)
 
 
