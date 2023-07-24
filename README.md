@@ -5,9 +5,8 @@
 ## Basic Usage
 
 ```
-/new_reamind 創建新的提醒事項
-/show_remind 查看現有提醒事項
-/del_remind 刪除現有提醒事項
+/remind 打開選單
+/delete 使用 ID 刪除 Remind
 ```
 
 ## Install
